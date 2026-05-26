@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "swagger-api-finder": {
+      "command": "python3",
+      "args": [
+        "/path/to/your/repo/check_swagger.py"
+      ]
+    }
+  }
+}
