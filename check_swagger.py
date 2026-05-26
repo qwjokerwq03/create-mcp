@@ -98,6 +98,9 @@ def scan_codebase_files(tree_files):
             # Django pattern
             elif lower_path.endswith("urls.py"):
                 candidates.append((path, "django"))
+            # Java Spring Boot patterns
+            elif lower_path.endswith("controller.java") or lower_path.endswith("resource.java") or lower_path.endswith("controller.kt") or lower_path.endswith("resource.kt"):
+                candidates.append((path, "java-spring"))
                 
     return candidates
 
@@ -154,6 +157,42 @@ def parse_django_routes(code):
             "path": "/" + path.strip('/'),
             "summary": f"Django path routing to {path}"
         })
+    return endpoints
+
+def parse_spring_routes(code):
+    """Extracts REST routes from Java/Kotlin Spring Boot controller code."""
+    endpoints = []
+    
+    # 1. Look for class-level RequestMapping base path
+    base_path = ""
+    base_match = re.search(r'@RequestMapping\(\s*(?:value\s*=\s*)?[\'"]([^\'\"]+)[\'"]', code)
+    if base_match:
+        base_path = base_match.group(1).rstrip('/')
+        
+    # 2. Extract method-level mappings
+    mapping_patterns = [
+        ("GET", r'@GetMapping\(\s*(?:value\s*=\s*)?[\'"]([^\'\"]+)[\'"]'),
+        ("POST", r'@PostMapping\(\s*(?:value\s*=\s*)?[\'"]([^\'\"]+)[\'"]'),
+        ("PUT", r'@PutMapping\(\s*(?:value\s*=\s*)?[\'"]([^\'\"]+)[\'"]'),
+        ("DELETE", r'@DeleteMapping\(\s*(?:value\s*=\s*)?[\'"]([^\'\"]+)[\'"]'),
+        ("PATCH", r'@PatchMapping\(\s*(?:value\s*=\s*)?[\'"]([^\'\"]+)[\'"]'),
+        ("GET/POST", r'@RequestMapping\(\s*(?:value\s*=\s*)?[\'"]([^\'\"]+)[\'"]'),
+    ]
+    
+    for method, pattern in mapping_patterns:
+        matches = re.findall(pattern, code)
+        for path in matches:
+            # Combine base_path and path
+            full_path = base_path + "/" + path.lstrip('/')
+            # Clean double slashes
+            full_path = "/" + full_path.strip('/')
+            
+            endpoints.append({
+                "method": method,
+                "path": full_path,
+                "summary": f"Spring Boot {method} handler for {full_path}"
+            })
+            
     return endpoints
 
 def generate_mcp_server(endpoints, base_url, repo_name, output_path):
@@ -505,7 +544,7 @@ def run_codebase_pipeline(owner, repo, base_url):
         
     candidates = scan_codebase_files(tree_files)
     if not candidates:
-        return f"Scan Complete: No framework routing files (Express, FastAPI, Flask, Django) detected in {owner}/{repo}."
+        return f"Scan Complete: No framework routing files (Express, FastAPI, Flask, Django, Spring Boot) detected in {owner}/{repo}."
         
     log(f"Found {len(candidates)} routing files. Starting static code analysis...")
     endpoints = []
@@ -524,6 +563,8 @@ def run_codebase_pipeline(owner, repo, base_url):
             file_endpoints = parse_python_routes(code)
         elif framework == "django":
             file_endpoints = parse_django_routes(code)
+        elif framework == "java-spring":
+            file_endpoints = parse_spring_routes(code)
             
         for ep in file_endpoints:
             # Augment summary with file info

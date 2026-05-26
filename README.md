@@ -11,7 +11,7 @@ A premium Model Context Protocol (MCP) server written in pure Python with **zero
 ## ✨ Features
 *   **Smart Probing**: Give it a homepage URL, and it automatically discovers specifications at common subpaths (e.g. `/swagger.json`, `/openapi.json`, `/v2/api-docs`, etc.).
 *   **Open Codebase API Scanner**: If Swagger is not found, the tool automatically scans the webpage's HTML to locate its public GitHub repository. It then uses public tree APIs to inspect its codebase structure.
-*   **Multi-Framework Support**: Statically scans and extracts REST routes from Express.js (JS/TS), FastAPI/Flask (Python), and Django (Python) controllers, routers, and URL configurations.
+*   **Multi-Framework Support**: Statically scans and extracts REST routes from Express.js (JS/TS), FastAPI/Flask (Python), Django (Python), and Java/Kotlin Spring Boot controller files.
 *   **Auto-generated Custom MCP Server**: Automatically synthesizes discovered endpoints into a self-contained, fully compliant `generated_mcp_<repo>.py` Python server! Each discovered endpoint is converted into an executable MCP tool that performs live HTTP requests against the base URL.
 *   **Multi-format Parsing**: Robustly parses both JSON and basic YAML OpenAPI formats.
 *   **Comprehensive Summaries**: Renders all routes, HTTP methods (`GET`, `POST`, etc.), parameters, types, and descriptions in a clear markdown structure.
