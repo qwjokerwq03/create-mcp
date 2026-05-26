@@ -1,4 +1,4 @@
-# 🔍 Swagger/OpenAPI Detector MCP Server
+# 🔍 Create MCP (Swagger/OpenAPI Detector)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Model Context Protocol](https://img.shields.io/badge/Protocol-MCP-blue.svg)](https://modelcontextprotocol.io/)
@@ -25,7 +25,7 @@ Register the server in your environment's configuration file (e.g., `mcp_config.
     "swagger-api-finder": {
       "command": "python3",
       "args": [
-        "/path/to/swagger-detector-mcp/check_swagger.py"
+        "/path/to/create-mcp/check_swagger.py"
       ]
     }
   }
